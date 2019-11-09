@@ -39,9 +39,18 @@ func File(path string, options ...scf4go.Option) Option {
 
 	return func(reader *fileReader) error {
 
+		ext := filepath.Ext(path)
+
+		realcodec := scf4go.NewOptions(options...).Codec
+
+		switch ext {
+		case ".yaml":
+			realcodec = "yaml"
+		}
+
 		reader.path = append(reader.path, &fileWithCodec{
 			path:  path,
-			codec: scf4go.NewOptions(options...).Codec,
+			codec: realcodec,
 		})
 
 		return nil
@@ -65,9 +74,18 @@ func Dir(path string, options ...scf4go.Option) Option {
 				return err
 			}
 
+			ext := filepath.Ext(path)
+
+			realcodec := codec
+
+			switch ext {
+			case ".yaml":
+				realcodec = "yaml"
+			}
+
 			reader.path = append(reader.path, &fileWithCodec{
 				path:  path,
-				codec: codec,
+				codec: realcodec,
 			})
 
 			return err
