@@ -157,7 +157,7 @@ func newSubConfig(prefix []string, config Config) Config {
 }
 
 func (config *subConfig) Prefix() []string {
-	return append(config.Prefix(), config.prefix...)
+	return append(config.config.Prefix(), config.prefix...)
 }
 
 func (config *subConfig) Close() {
