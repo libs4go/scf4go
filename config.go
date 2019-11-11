@@ -176,7 +176,7 @@ func (config *subConfig) SubConfig(path ...string) Config {
 }
 
 func (config *subConfig) Get(path ...string) Value {
-	return config.config.Get(append(config.prefix, path...)...)
+	return config.config.Get(append(config.Prefix(), path...)...)
 }
 
 func (config *subConfig) Map() map[string]interface{} {
