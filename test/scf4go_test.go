@@ -69,7 +69,7 @@ func TestLoadFile(t *testing.T) {
 
 	var r map[string][]string
 
-	err = config.Get("test").Scan(&r)
+	err = config.Scan(&r)
 
 	require.NoError(t, err)
 

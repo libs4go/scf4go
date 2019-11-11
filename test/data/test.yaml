@@ -4,7 +4,6 @@ url: http://www.wolfcode.cn
 server2:
     host: http://www.wolfcode.cn 
     test:
-      test: 
         ETH:
             [mainnet,testnet]
 #数组，即表示server为[a,b,c]
