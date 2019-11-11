@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -63,4 +64,14 @@ func TestLoadFile(t *testing.T) {
 	servers = config.Get("server").StringSlice([]string{})
 
 	require.Equal(t, len(servers), 4)
+
+	config = config.SubConfig("server2").SubConfig("test")
+
+	var r map[string][]string
+
+	err = config.Get("test").Scan(&r)
+
+	require.NoError(t, err)
+
+	println(fmt.Sprintf("%v", r))
 }

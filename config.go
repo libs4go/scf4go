@@ -2,6 +2,7 @@ package scf4go
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
@@ -89,6 +90,7 @@ func (config *configImpl) Close() {
 }
 
 func (config *configImpl) Prefix() []string {
+	println("root server ")
 	return nil
 }
 
@@ -127,6 +129,7 @@ func (config *configImpl) SubConfig(path ...string) Config {
 }
 
 func (config *configImpl) Get(path ...string) Value {
+	println(fmt.Sprintf("%v", path))
 	return &valueImpl{config.sj.GetPath(path...)}
 }
 
@@ -176,7 +179,9 @@ func (config *subConfig) SubConfig(path ...string) Config {
 }
 
 func (config *subConfig) Get(path ...string) Value {
-	return config.config.Get(append(config.Prefix(), path...)...)
+
+	path = append(config.prefix, path...)
+	return config.config.Get(path...)
 }
 
 func (config *subConfig) Map() map[string]interface{} {
