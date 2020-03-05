@@ -64,17 +64,21 @@ func Dir(path string, options ...scf4go.Option) Option {
 
 		codec := scf4go.NewOptions(options...).Codec
 
-		return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		return filepath.Walk(path, func(child string, info os.FileInfo, err error) error {
+
+			if path == child {
+				return nil
+			}
 
 			if err != nil {
 				return err
 			}
 
-			if path == "." || path == ".." {
+			if child == "." || child == ".." {
 				return err
 			}
 
-			ext := filepath.Ext(path)
+			ext := filepath.Ext(child)
 
 			realcodec := codec
 
@@ -84,7 +88,7 @@ func Dir(path string, options ...scf4go.Option) Option {
 			}
 
 			reader.path = append(reader.path, &fileWithCodec{
-				path:  path,
+				path:  child,
 				codec: realcodec,
 			})
 
