@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -12,6 +13,43 @@ import (
 	"github.com/libs4go/scf4go/reader/file"
 	"github.com/libs4go/scf4go/reader/memory"
 )
+
+type unknown struct {
+	A1 int    `json:"a1"`
+	A2 bool   `json:"a2"`
+	A3 string `json:"a3"`
+}
+
+func TestMemoryWrite(t *testing.T) {
+
+	buff, err := json.Marshal(&unknown{
+		A1: 1,
+		A2: true,
+		A3: time.Hour.String(),
+	})
+
+	require.NoError(t, err)
+
+	println(string(buff))
+
+	readerWriter := memory.New()
+
+	readerWriter.Write(&unknown{
+		A1: 1,
+		A2: true,
+		A3: time.Hour.String(),
+	})
+
+	config := scf4go.New()
+
+	err = config.Load(readerWriter)
+
+	require.NoError(t, err)
+
+	require.Equal(t, config.Get("a1").Int(0), 1)
+	require.Equal(t, config.Get("a3").Duration(time.Second), time.Hour)
+	require.Equal(t, config.Get("a2").Bool(true), true)
+}
 
 func TestMemory(t *testing.T) {
 	config := scf4go.New()

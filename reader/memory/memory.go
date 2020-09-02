@@ -4,28 +4,50 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/bitly/go-simplejson"
+	"github.com/libs4go/errors"
 	"github.com/libs4go/scf4go"
 )
 
 type memoryReader struct {
 	options []Option
 	blocks  []*scf4go.ReadBlock
+	sj      *simplejson.Json
+}
+
+// ReaderWriter .
+type ReaderWriter interface {
+	scf4go.Reader
+	Write(value interface{}, path ...string)
 }
 
 // Option .
 type Option func(reader *memoryReader) error
 
 // New .
-func New(options ...Option) scf4go.Reader {
+func New(options ...Option) ReaderWriter {
 
 	reader := &memoryReader{
 		options: options,
+		sj:      simplejson.New(),
 	}
 
 	return reader
 }
 
 func (reader *memoryReader) Read() ([]*scf4go.ReadBlock, error) {
+
+	data, err := reader.sj.Encode()
+
+	if err != nil {
+		return nil, errors.Wrap(err, "marshal json error")
+	}
+
+	reader.blocks = append(reader.blocks, &scf4go.ReadBlock{
+		Data:      []byte(data),
+		Codec:     "json",
+		Timestamp: time.Now(),
+	})
 
 	for _, option := range reader.options {
 		err := option(reader)
@@ -35,6 +57,10 @@ func (reader *memoryReader) Read() ([]*scf4go.ReadBlock, error) {
 	}
 
 	return reader.blocks, nil
+}
+
+func (reader *memoryReader) Write(value interface{}, path ...string) {
+	reader.sj.SetPath(path, value)
 }
 
 func (reader *memoryReader) Name() string {
